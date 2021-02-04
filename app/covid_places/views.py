@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from .serializers import LaboratorySerializer, HospitalSerializer
 from django.contrib.gis.geos import Point
 from core import models
+from django.contrib.gis.db.models.functions import Distance
 
 
 class BaseLocationViewSet(viewsets.ModelViewSet):
@@ -12,7 +13,13 @@ class BaseLocationViewSet(viewsets.ModelViewSet):
         serializer.save(point=point)
     
     def get_queryset(self):
-        # return nearest by given lat and lng in params
+        longitude = self.request.query_params.get('longitude', 0)
+        latitude= self.request.query_params.get('latitude', 0)
+        user_location = Point(latitude, longitude, srid=4326)
+        dataset = self.queryset.annotate(
+            distance=Distance('point', user_location)
+        ).order_by('distance')
+        import pdb; pdb.set_trace()
         return self.queryset
 
 class LaboratoryViewSet(BaseLocationViewSet):
