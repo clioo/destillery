@@ -34,6 +34,7 @@ class LaboratorySerializer(serializers.ModelSerializer):
                   'distance')
         extra_kwargs = {'id': {'read_only': True}}
 
+
 class HospitalSerializer(serializers.ModelSerializer):
     distance = serializers.SerializerMethodField(read_only=True)
 
@@ -42,6 +43,7 @@ class HospitalSerializer(serializers.ModelSerializer):
         user_lon = self.context['request'].query_params.get('longitude', 0)
         return calculate_distance(instance.latitude, instance.longitude,
                                   float(user_lat), float(user_lon))
+
     class Meta:
         model = models.Hospital
         fields = ('id', 'name', 'latitude', 'longitude', 'has_vaccine',

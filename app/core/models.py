@@ -38,12 +38,15 @@ class Place(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     geolocation = gis_models.PointField(geography=True)
+
     class Meta:
         abstract = True
+
 
 class Hospital(Place):
     has_vaccine = models.BooleanField(default=False)
     infected_number = models.PositiveIntegerField(default=0)
+
 
 class Laboratory(Place):
     has_covid_tests = models.BooleanField(default=False)

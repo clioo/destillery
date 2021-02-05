@@ -1,7 +1,5 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from core import models
-from unittest.mock import patch
 
 
 def sample_user(email='test@test.com', password='testpass'):

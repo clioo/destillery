@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics, status
 from .serializers import LaboratorySerializer, HospitalSerializer
 from django.contrib.gis.geos import Point
 from core import models
-from django.contrib.gis.db.models.functions import Distance, Transform
+from django.contrib.gis.db.models.functions import Distance
 from rest_framework.response import Response
 from django.conf import settings
 import re
@@ -20,7 +20,7 @@ class BaseLocationViewSet(viewsets.ModelViewSet):
         point = Point(serializer.validated_data.get('latitude', 0),
                       serializer.validated_data.get('longitude', 0))
         serializer.save(geolocation=point)
-    
+
     def get_queryset(self):
         longitude = self.request.query_params.get('longitude', 0)
         latitude = self.request.query_params.get('latitude', 0)
@@ -30,9 +30,11 @@ class BaseLocationViewSet(viewsets.ModelViewSet):
         ).order_by('distance')
         return dataset
 
+
 class LaboratoryViewSet(BaseLocationViewSet):
     serializer_class = LaboratorySerializer
     queryset = models.Laboratory.objects.all()
+
 
 class HospitalViewSet(BaseLocationViewSet):
     serializer_class = HospitalSerializer
@@ -45,6 +47,7 @@ class BaseGeocodingRetrieveView(generics.RetrieveAPIView):
         is_match = bool(re.match(latlng_regex, latlng))
         return is_match
 
+
 class GeocodingView(BaseGeocodingRetrieveView):
     def retrieve(self, request):
         address = self.request.query_params.get('address', '')
@@ -53,6 +56,7 @@ class GeocodingView(BaseGeocodingRetrieveView):
                             status.HTTP_400_BAD_REQUEST)
         g = geocoder.google(address, key=settings.API_KEY)
         return Response(g.json, g.status_code)
+
 
 class ReverseGeocodingView(BaseGeocodingRetrieveView):
     def retrieve(self, request):
@@ -63,5 +67,6 @@ class ReverseGeocodingView(BaseGeocodingRetrieveView):
         latlng = latlng.split(',')
         # making coords floats
         latlng = [float(cord) for cord in latlng]
-        g = geocoder.google(latlng, method='reverse', components=f"key:{settings.API_KEY}")
+        g = geocoder.google(latlng, method='reverse',
+                            components=f"key:{settings.API_KEY}")
         return Response(g.json, g.status_code)
