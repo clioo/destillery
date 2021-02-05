@@ -1,0 +1,15 @@
+# COVID geolocator
+
+# Challenges in the project
+This project use postgis for geolocation, one of the problems was to get the accurate distance since geometry types are 
+not accurate at all and the base distance calculatio with the SRID 4326 is nonsense, the solution increased complexity, so,
+I had to implement a method that takes 2 lat/lon coordinates and calculate its distance, the calculation is accurate, you can 
+check it here: 
+http://www.movable-type.co.uk/scripts/latlong.html
+
+## How to add GOOGLE API KEY
+In the docker-compose file you can find an environment variable called GOOGLE_API_KEY, just replace the value
+with your API KEY and you're ready to go.
+
+## How to run this backend
+sudo docker-compose up --build -d
