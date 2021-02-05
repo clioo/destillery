@@ -37,13 +37,13 @@ class Place(models.Model):
     name = models.CharField(max_length=255)
     latitude = models.FloatField()
     longitude = models.FloatField()
-    point = gis_models.PointField(geography=True)
+    geolocation = gis_models.PointField(geography=True)
     class Meta:
         abstract = True
 
 class Hospital(Place):
     has_vaccine = models.BooleanField(default=False)
-    infected_number = models.IntegerField(default=0)
+    infected_number = models.PositiveIntegerField(default=0)
 
 class Laboratory(Place):
     has_covid_tests = models.BooleanField(default=False)

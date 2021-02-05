@@ -7,6 +7,8 @@ from core import models
 
 HOSPITAL_LIST_URL = reverse('covid_places:hospitals-list')
 LABORATORY_LIST_URL = reverse('covid_places:laboratories-list')
+GEOCODING_URL = reverse('covid_places:geocoding')
+REVERSE_GEOCODING_URL = reverse('covid_places:reverse-geocoding')
 
 
 def get_hospital_detail_url(hospital_id):
@@ -61,7 +63,7 @@ class PublicPlacesAPI(TestCase):
             self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Laboratory.objects.count(), 3)
         res = self.client.get(LABORATORY_LIST_URL)
-        self.assertEqual(len(res.data), 3)
+        self.assertEqual(len(res.data.get('results')), 3)
 
     def test_detail_laboratory_success_200(self):
         payload={'name': 'My first lab', 'latitude': 53.0, 'longitude': 0.0}
@@ -81,6 +83,31 @@ class PublicPlacesAPI(TestCase):
         res = self.client.delete(detail_url)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_get_nearest_laboratories_success_200(self):
-        # TODO implement functionality first
-        pass
+class GeocodingAPI(TestCase):
+    """Testing public API endpoints."""
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_reverse_geocoding_base_request_space_404(self):
+        res = self.client.get(REVERSE_GEOCODING_URL, {'latlng': '12, a23'})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_reverse_geocoding_base_request_2_commas_404(self):
+        res = self.client.get(REVERSE_GEOCODING_URL, {'latlng': '3.0,3.0,12.0'})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_reverse_geocoding_base_request_200(self):
+        res = self.client.get(REVERSE_GEOCODING_URL, {'latlng': '25.776802366212806,-108.97180816719028'})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_geocoding_base_request_404(self):
+        res = self.client.get(GEOCODING_URL, {'address': ''})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_geocoding_base_no_params_request_404(self):
+        res = self.client.get(GEOCODING_URL)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_geocoding_base_request_200(self):
+        res = self.client.get(GEOCODING_URL, {'address': 'galeana 1657 villa owen'})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
