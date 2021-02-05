@@ -21,7 +21,7 @@ services:
          - DB_USER=postgres
          - DB_PASS=supersecretpassword
          - DB_PORT=5432
-         - GOOGLE_API_KEY=AIzaSyBSKNno0k2uTLczSQL08pRkCYN_Q419-hg
+         - API_KEY=mysupersecretkey
         depends_on: 
          - db
 
