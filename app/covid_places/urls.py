@@ -9,5 +9,10 @@ router.register('hospitals', views.HospitalViewSet, 'hospitals')
 app_name = 'covid_places'
 
 
-urlpatterns = []
+urlpatterns = [
+    path('reverse-geocoding/', views.ReverseGeocodingView.as_view(),
+         name='reverse-geocoding'),
+    path('geocoding/', views.GeocodingView.as_view(),
+         name='geocoding')
+]
 urlpatterns += router.urls
